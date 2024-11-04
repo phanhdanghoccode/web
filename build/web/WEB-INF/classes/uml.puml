@@ -1,0 +1,111 @@
+@startuml
+
+package "WebMap" {
+    
+    ' Phần Frontend
+    class ProvinceView {
+        +displayMap() : void
+        +showProvinceInfo(province: Province) : void
+    }
+
+    class UserProfileView {
+        +displayUserProfile(user: User) : void
+        +showUserPosts(posts: List<Post>) : void
+    }
+
+    class PostView {
+        +displayPost(post: Post) : void
+        +addComment(content: String) : void
+    }
+
+    ' Phần Backend
+    class Province {
+        +id : Long
+        +name : String
+        +region : String
+        +population : int
+        +description : String
+        +getInfo() : String
+    }
+
+    class User {
+        +id : Long
+        +username : String
+        +password : String
+        +fullName : String
+        +email : String
+        +getProfile() : UserProfile
+    }
+
+    class Post {
+        +id : Long
+        +userId : Long
+        +content : String
+        +imageUrl : String
+        +createdAt : Date
+        +createPost() : void
+        +deletePost() : void
+    }
+
+    class Comment {
+        +id : Long
+        +postId : Long
+        +userId : Long
+        +content : String
+        +createdAt : Date
+        +addComment() : void
+    }
+
+    class ProvinceRepository {
+        +findById(id: Long) : Province
+        +findAll() : List<Province>
+    }
+
+    class UserRepository {
+        +findById(id: Long) : User
+        +save(user: User) : void
+    }
+
+    class PostRepository {
+        +findById(id: Long) : Post
+        +findByUserId(userId: Long) : List<Post>
+    }
+
+    class CommentRepository {
+        +findByPostId(postId: Long) : List<Comment>
+        +save(comment: Comment) : void
+    }
+
+    class ProvinceController {
+        +getProvinceById(id: Long) : Province
+    }
+
+    class UserController {
+        +getUserProfile(id: Long) : User
+    }
+
+    class PostController {
+        +createPost(post: Post) : void
+        +getPostsByUser(userId: Long) : List<Post>
+    }
+
+    class CommentController {
+        +addComment(comment: Comment) : void
+        +getCommentsByPost(postId: Long) : List<Comment>
+    }
+
+    ' Mối quan hệ giữa các lớp
+    User "1" -- "0..*" Post : "writes"
+    Post "1" -- "0..*" Comment : "has"
+    Province "1" -- "0..*" Post : "has"
+    ProvinceController "1" -- "1" ProvinceRepository : "uses"
+    UserController "1" -- "1" UserRepository : "uses"
+    PostController "1" -- "1" PostRepository : "uses"
+    CommentController "1" -- "1" CommentRepository : "uses"
+    ProvinceView "1" -- "1" Province : "displays"
+    UserProfileView "1" -- "1" User : "displays"
+    PostView "1" -- "1" Post : "displays"
+
+}
+
+@enduml
